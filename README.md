@@ -14,3 +14,4 @@
 
 - Color palette: <https://colorhunt.co/palette/edf1d69dc08b60996640513b>
 - [Tiling blog article](https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6)
+- [Movement on a grid](https://medium.com/swlh/grid-based-movement-in-a-top-down-2d-rpg-with-phaser-3-e3a3486eb2fd)
