@@ -13,7 +13,7 @@ export default class Game extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("tiles", WorldTiles);
+    this.load.image("world-tiles", WorldTiles);
     this.load.tilemapCSV("map", WorldMap);
     this.load.atlas("player", PlayerPNG, PlayerJSON);
   }
@@ -21,7 +21,7 @@ export default class Game extends Phaser.Scene {
   create() {
     // When loading a CSV map, make sure to specify the tileWidth and tileHeight!
     const map = this.make.tilemap({ key: "map", tileWidth: 16, tileHeight: 16 });
-    const tileset = map.addTilesetImage("tiles");
+    const tileset = map.addTilesetImage("world-tiles");
     const layer = map.createLayer(0, tileset, 0, 0); // layer index, tileset, x, y
 
     // Setup player

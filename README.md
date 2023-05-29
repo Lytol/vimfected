@@ -10,14 +10,7 @@
 - Character can dig to find raw materials (starts with hands, very slow)
 - Resources renew randomly each night (untapped resources grow each night)
 
-## TODO
-
-- User should be able to sign up and login (one character, email required)
-- Player should be able to move around the world with hjkl
-- Player movement should snap to tile
-- Player should be able to dig with <TODO>
-- Player should have inventory
-
 ## Resources
 
-Color palette: <https://colorhunt.co/palette/edf1d69dc08b60996640513b>
+- Color palette: <https://colorhunt.co/palette/edf1d69dc08b60996640513b>
+- [Tiling blog article](https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6)

@@ -1,11 +1,15 @@
+import './styles.css';
 import Phaser from 'phaser';
 import Game from './scenes/Game';
 
 const config = {
     type: Phaser.AUTO,
-    width: 1200 ,
-    height: 800,
     parent: "app",
+    width: 1280,
+    height: 720,
+    scale: {
+      mode: Phaser.Scale.ENVELOP,
+    },
     pixelArt: true,
     physics: {
         default: 'arcade',
