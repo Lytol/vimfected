@@ -1,17 +1,19 @@
 import Phaser from 'phaser';
-import Example from './scenes/Example';
+import Game from './scenes/Game';
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1200 ,
+    height: 800,
+    parent: "app",
+    pixelArt: true,
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 200 }
+            gravity: { y: 0 }
         }
     },
-    scene: Example
+    scene: Game
 };
 
 export default new Phaser.Game(config);
