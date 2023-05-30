@@ -1,22 +1,14 @@
+import Controls from '../utils/Controls';
+import Player from '../entities/Player';
+
 import WorldTiles from '../assets/world-tiles.png';
 import WorldMap from '../assets/map.csv?url';
 import PlayerPNG from '../assets/player.png';
 import PlayerJSON from '../assets/player.json';
 
-const { KeyCodes } = Phaser.Input.Keyboard; 
-
-const KEY_BINDINGS = {
-  MOVE_LEFT: KeyCodes.H,
-  MOVE_DOWN: KeyCodes.J,
-  MOVE_UP:   KeyCodes.K,
-  MOVE_RIGHT: KeyCodes.L,
-};
-
-
 export default class Game extends Phaser.Scene {
-  static readonly TILE_SIZE = 16;
-
-  player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  player: Player;
+  controls: Controls;
 
   constructor() {
     super();
@@ -34,19 +26,36 @@ export default class Game extends Phaser.Scene {
     const tileset = map.addTilesetImage("world-tiles");
     const layer = map.createLayer(0, tileset, 0, 0); // layer index, tileset, x, y
 
-    // Setup player
-    this.player = this.physics.add.sprite(400, 350, "player", "static/down");
+    // Setup animations
+    this.#setupAnimations();
 
-    // Set up the arrows to control the camera
-    this.keys = this.input.keyboard.addKeys(KEY_BINDINGS);
+    // Setup player
+    this.player = new Player(
+      this.physics.add.sprite(0, 0, "player"),
+      new Phaser.Math.Vector2(25, 25),
+    );
+
+    // Setup controls
+    this.controls = new Controls(this.input, this.player);
+    this.controls.create();
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
     const camera = this.cameras.main;
-    camera.startFollow(this.player);
+    camera.roundPixels = true;
+    camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+  }
 
-    // players animations
+  update(time: number, delta: number) {
+    this.controls.update();
+    this.player.update(delta);
+    console.log(`x: ${this.player.position.x} / y: ${this.player.position.y}`)
+  }
+
+  #setupAnimations() {
     const anims = this.anims;
+
+    // player animations
     anims.create({
       key: "player-walk-left",
       frames: anims.generateFrameNames("player", { prefix: "walk/left/", start: 1, end: 6, zeroPad: 0 }),
@@ -71,47 +80,5 @@ export default class Game extends Phaser.Scene {
       frameRate: 10,
       repeat: -1
     });
-  }
-
-  update(time, delta) {
-    const speed = 100;
-
-    const previousVelocity = this.player.body.velocity.clone();
-    this.player.body.setVelocity(0);
-
-    // Horizontal movement
-    if (this.keys.MOVE_LEFT.isDown) {
-      this.player.body.setVelocityX(-speed);
-    } else if (this.keys.MOVE_RIGHT.isDown) {
-      this.player.body.setVelocityX(speed);
-    }
-
-    // Vertical movement
-    if (this.keys.MOVE_UP.isDown) {
-      this.player.body.setVelocityY(-speed);
-    } else if (this.keys.MOVE_DOWN.isDown) {
-      this.player.body.setVelocityY(speed);
-    }
-
-    // Normalize and scale the velocity so that player can't move faster along a diagonal
-    this.player.body.velocity.normalize().scale(speed);
-
-    if (this.keys.MOVE_LEFT.isDown) {
-      this.player.anims.play("player-walk-left", true);
-    } else if (this.keys.MOVE_RIGHT.isDown) {
-      this.player.anims.play("player-walk-right", true);
-    } else if (this.keys.MOVE_UP.isDown) {
-      this.player.anims.play("player-walk-up", true);
-    } else if (this.keys.MOVE_DOWN.isDown) {
-      this.player.anims.play("player-walk-down", true);
-    } else {
-      this.player.anims.stop();
-
-      // If we were moving, pick and idle frame to use
-      if (previousVelocity.x < 0) this.player.setTexture("player", "static/left");
-      else if (previousVelocity.x > 0) this.player.setTexture("player", "static/right");
-      else if (previousVelocity.y < 0) this.player.setTexture("player", "static/up");
-      else if (previousVelocity.y > 0) this.player.setTexture("player", "static/down");
-    }
   }
 }
