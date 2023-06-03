@@ -1,6 +1,8 @@
-import './styles.css';
 import Phaser from 'phaser';
+import Menu from './scenes/Menu';
 import Game from './scenes/Game';
+
+import './styles.css';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -20,7 +22,10 @@ const config: Phaser.Types.Core.GameConfig = {
             gravity: { y: 0 }
         }
     },
-    scene: Game
+    scene: [
+      Menu,
+      Game,
+    ]
 };
 
 export default new Phaser.Game(config);

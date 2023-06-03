@@ -1,5 +1,6 @@
 import Controls from '../utils/Controls';
 import Player from '../entities/Player';
+import Client from '../utils/Client';
 
 import WorldTiles from '../assets/world-tiles.png';
 import WorldMap from '../assets/map.csv?url';
@@ -9,20 +10,25 @@ import PlayerJSON from '../assets/player.json';
 export default class Game extends Phaser.Scene {
   player: Player;
   controls: Controls;
+  client: Client;
 
   constructor() {
-    super();
+    super('game');
+  }
+
+  init({ client, map }) {
+    this.client = client;
+    this.map = map;
   }
 
   preload() {
     this.load.image("world-tiles", WorldTiles);
-    this.load.tilemapCSV("map", WorldMap);
     this.load.atlas("player", PlayerPNG, PlayerJSON);
   }
 
   create() {
     // When loading a CSV map, make sure to specify the tileWidth and tileHeight!
-    const map = this.make.tilemap({ key: "map", tileWidth: 16, tileHeight: 16 });
+    const map = this.make.tilemap({ data: this.map.data, tileWidth: 16, tileHeight: 16 });
     const tileset = map.addTilesetImage("world-tiles");
     const layer = map.createLayer(0, tileset, 0, 0); // layer index, tileset, x, y
 
@@ -37,7 +43,6 @@ export default class Game extends Phaser.Scene {
 
     // Setup controls
     this.controls = new Controls(this.input, this.player);
-    this.controls.create();
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
     const camera = this.cameras.main;
@@ -49,7 +54,6 @@ export default class Game extends Phaser.Scene {
   update(time: number, delta: number) {
     this.controls.update();
     this.player.update(delta);
-    console.log(`x: ${this.player.position.x} / y: ${this.player.position.y}`)
   }
 
   #setupAnimations() {

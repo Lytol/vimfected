@@ -16,10 +16,8 @@ export default class Controls {
   constructor(
     private input: Phaser.Input.InputPlugin,
     private player: Player,
-  ) {}
-
-  create() {
-    this.keys = this.input.keyboard.addKeys(KEY_BINDINGS);
+  ) {
+    this.keys = input.keyboard.addKeys(KEY_BINDINGS);
   }
 
   update() {
