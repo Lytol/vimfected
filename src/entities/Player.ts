@@ -3,7 +3,7 @@ import { Direction, TILE_SIZE } from '../utils/constants';
 export default class Player {
   static readonly SPEED = TILE_SIZE*4;
 
-  private movement: Direction = Direction.NONE;
+  private movement: Direction = Direction.None;
   private pixelsMoved: number = 0;
 
   constructor(
@@ -23,7 +23,7 @@ export default class Player {
   }
 
   update(delta: number): void {
-    if (this.movement === Direction.NONE) return;
+    if (this.movement === Direction.None) return;
 
     let stopMoving = false;
     let positionChange = delta / 1000 * Player.SPEED;
@@ -34,16 +34,16 @@ export default class Player {
     }
 
     switch (this.movement) {
-      case Direction.LEFT:
+      case Direction.Left:
         this.sprite.x -= positionChange;
         break;
-      case Direction.RIGHT:
+      case Direction.Right:
         this.sprite.x += positionChange;
         break;
-      case Direction.UP:
+      case Direction.Up:
         this.sprite.y -= positionChange;
         break;
-      case Direction.DOWN:
+      case Direction.Down:
         this.sprite.y += positionChange;
         break;
     }
@@ -51,14 +51,14 @@ export default class Player {
     if (stopMoving) {
       this.sprite.anims.stop();
       this.sprite.setFrame(`static/${this.movement}`)
-      this.movement = Direction.NONE;
+      this.movement = Direction.None;
     } else {
       this.pixelsMoved += positionChange;
     }
   }
 
   move(direction: Direction): void {
-    if (this.movement !== Direction.NONE) {
+    if (this.movement !== Direction.None) {
       return;
     }
 
@@ -66,19 +66,19 @@ export default class Player {
     this.pixelsMoved = 0;
 
     switch (this.movement) {
-      case Direction.LEFT:
+      case Direction.Left:
         this.position.x -= 1;
         this.sprite.anims.play("player-walk-left", true);
         break;
-      case Direction.RIGHT:
+      case Direction.Right:
         this.position.x += 1;
         this.sprite.anims.play("player-walk-right", true);
         break;
-      case Direction.UP:
+      case Direction.Up:
         this.position.y -= 1;
         this.sprite.anims.play("player-walk-up", true);
         break;
-      case Direction.DOWN:
+      case Direction.Down:
         this.position.y += 1;
         this.sprite.anims.play("player-walk-down", true);
         break;

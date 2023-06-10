@@ -1,10 +1,11 @@
-import { Command, CommandType } from './Commands';
+import { Command, CommandType, RegisterCommand } from './Commands';
 
 export default class Client {
   static readonly PROTOCOL = "vimfected";
 
   public id: string;
   public registered: boolean;
+  public commands: Array<Command>;
 
   private ws: WebSocket;
 
@@ -20,7 +21,7 @@ export default class Client {
   }
 
   register(): void {
-    this.send(new Command(CommandType.Register, { id: this.id }));
+    this.send(new RegisterCommand(this.id));
   }
 
   onError(event: Event) {
@@ -29,6 +30,8 @@ export default class Client {
 
   handle(event: MessageEvent) {
     const cmd = Command.parse(event.data);
+    console.log("Received command")
+    console.dir(cmd)
     this.commands.push(cmd);
   }
 

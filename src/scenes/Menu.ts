@@ -1,5 +1,5 @@
 import Client from '../utils/Client';
-import { Command, CommandType } from '../utils/Commands';
+import { CommandType, SnapshotCommand } from '../utils/Commands';
 import { v4 as uuid } from 'uuid';
 
 export default class Menu extends Phaser.Scene {
@@ -20,11 +20,11 @@ export default class Menu extends Phaser.Scene {
     }
 
     update() {
-        const snapshot = this.client.get(CommandType.Snapshot);
+        const snapshot = this.client.get(CommandType.Snapshot) as SnapshotCommand;
         if (snapshot) {
             this.scene.start("game", {
                 client: this.client,
-                map: snapshot.data.map,
+                snapshot: snapshot.data,
             })
         }
     }

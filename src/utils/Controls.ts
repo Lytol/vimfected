@@ -1,5 +1,6 @@
-import Player from "../entities/Player";
-import { Direction } from "../utils/constants";
+import { Direction } from "./constants";
+import Client from "./Client";
+import { Command, CommandType } from "./Commands";
 
 const { KeyCodes } = Phaser.Input.Keyboard; 
 
@@ -15,7 +16,7 @@ export default class Controls {
 
   constructor(
     private input: Phaser.Input.InputPlugin,
-    private player: Player,
+    private client: Client,
   ) {
     this.keys = input.keyboard.addKeys(KEY_BINDINGS);
   }
@@ -24,13 +25,13 @@ export default class Controls {
     const { MOVE_LEFT, MOVE_DOWN, MOVE_UP, MOVE_RIGHT } = this.keys;
 
     if (MOVE_LEFT.isDown) {
-      this.player.move(Direction.LEFT)
+      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Left }));
     } else if (MOVE_DOWN.isDown) {
-      this.player.move(Direction.DOWN)
+      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Down }));
     } else if (MOVE_UP.isDown) {
-      this.player.move(Direction.UP)
+      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Up }));
     } else if (MOVE_RIGHT.isDown) {
-      this.player.move(Direction.RIGHT)
+      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Right }));
     }
   }
 }

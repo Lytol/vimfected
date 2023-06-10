@@ -3,22 +3,23 @@ import Player from '../entities/Player';
 import Client from '../utils/Client';
 
 import WorldTiles from '../assets/world-tiles.png';
-import WorldMap from '../assets/map.csv?url';
 import PlayerPNG from '../assets/player.png';
 import PlayerJSON from '../assets/player.json';
+import { SnapshotData } from '../utils/Commands';
 
 export default class Game extends Phaser.Scene {
-  player: Player;
-  controls: Controls;
-  client: Client;
+  public player: Player;
+  public controls: Controls;
+  public client: Client;
+  public snapshot: SnapshotData;
 
   constructor() {
     super('game');
   }
 
-  init({ client, map }) {
+  init({ client, snapshot }: { client: Client; snapshot: SnapshotData }) {
     this.client = client;
-    this.map = map;
+    this.snapshot = snapshot;
   }
 
   preload() {
@@ -28,21 +29,21 @@ export default class Game extends Phaser.Scene {
 
   create() {
     // When loading a CSV map, make sure to specify the tileWidth and tileHeight!
-    const map = this.make.tilemap({ data: this.map.data, tileWidth: 16, tileHeight: 16 });
+    const map = this.make.tilemap({ data: this.snapshot.map.data, tileWidth: 16, tileHeight: 16 });
     const tileset = map.addTilesetImage("world-tiles");
-    const layer = map.createLayer(0, tileset, 0, 0); // layer index, tileset, x, y
+    map.createLayer(0, tileset, 0, 0); // layer index, tileset, x, y
 
     // Setup animations
     this.#setupAnimations();
 
-    // Setup player
+    // TODO: player should not be added by default, wait for server to add
     this.player = new Player(
       this.physics.add.sprite(0, 0, "player"),
       new Phaser.Math.Vector2(25, 25),
     );
 
     // Setup controls
-    this.controls = new Controls(this.input, this.player);
+    this.controls = new Controls(this.input, this.client);
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
     const camera = this.cameras.main;
@@ -51,11 +52,17 @@ export default class Game extends Phaser.Scene {
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
   }
 
-  update(time: number, delta: number) {
+  update(_: number, delta: number) {
+    // TODO: send events from controls
     this.controls.update();
+
+    // TODO: process events from client
+
+    // TODO: Update game objects accordingly
     this.player.update(delta);
   }
 
+  // TODO: animations should live with the entity itself
   #setupAnimations() {
     const anims = this.anims;
 
