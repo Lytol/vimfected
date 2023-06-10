@@ -36,11 +36,15 @@ export default class Game extends Phaser.Scene {
     // Setup animations
     this.#setupAnimations();
 
-    // TODO: player should not be added by default, wait for server to add
-    this.player = new Player(
-      this.physics.add.sprite(0, 0, "player"),
-      new Phaser.Math.Vector2(25, 25),
-    );
+    // TODO: Handle other player
+    for (const p of this.snapshot.players) {
+      if (p.id === this.client.id) {
+        this.player = new Player(
+          this.physics.add.sprite(0, 0, "player"),
+          new Phaser.Math.Vector2(p.x, p.y),
+        );
+      }
+    }
 
     // Setup controls
     this.controls = new Controls(this.input, this.client);

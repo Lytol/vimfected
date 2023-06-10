@@ -1,5 +1,5 @@
 import Client from '../utils/Client';
-import { CommandType, SnapshotCommand } from '../utils/Commands';
+import { CommandType } from '../utils/Commands';
 import { v4 as uuid } from 'uuid';
 
 export default class Menu extends Phaser.Scene {
@@ -11,6 +11,7 @@ export default class Menu extends Phaser.Scene {
 
     preload() {
         // Setup client
+        // TODO: users should be able to register and sign in
         this.client = new Client("ws://localhost:3000/", uuid());
     }
 
@@ -20,11 +21,12 @@ export default class Menu extends Phaser.Scene {
     }
 
     update() {
-        const snapshot = this.client.get(CommandType.Snapshot) as SnapshotCommand;
-        if (snapshot) {
+        // Discard messages until we get the snapshot and load game from there
+        const cmd = this.client.get(CommandType.Any);
+        if (cmd && cmd.type === CommandType.Snapshot) {
             this.scene.start("game", {
                 client: this.client,
-                snapshot: snapshot.data,
+                snapshot: cmd.data,
             })
         }
     }

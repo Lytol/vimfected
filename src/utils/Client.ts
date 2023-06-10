@@ -39,10 +39,17 @@ export default class Client {
     this.ws.send(command.toJSON());
   }
 
-  get(ct: CommandType): Command {
-    const idx = this.commands.findIndex(cmd => cmd.type == ct);
+  get(ct: CommandType = CommandType.Any): Command {
+    let idx
+
+    if (ct == CommandType.Any) {
+      idx = this.commands.length == 0 ? -1 : 0;
+    } else {
+      idx = this.commands.findIndex(cmd => cmd.type == ct);
+    }
+
     if (idx === -1) {
-      return null
+      return null;
     }
 
     const cmd = this.commands[idx];

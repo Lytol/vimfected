@@ -15,7 +15,7 @@ export default class Controls {
   keys: object;
 
   constructor(
-    private input: Phaser.Input.InputPlugin,
+    input: Phaser.Input.InputPlugin,
     private client: Client,
   ) {
     this.keys = input.keyboard.addKeys(KEY_BINDINGS);

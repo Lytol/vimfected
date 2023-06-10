@@ -1,6 +1,8 @@
 export enum CommandType {
+  Any = "*",
   Register = "register",
   Snapshot = "snapshot",
+  AddPlayer = "add_player",
   Move = "move",
 };
 
@@ -38,6 +40,8 @@ export class RegisterCommand extends Command {
 
 export interface PlayerData {
   id: string,
+  x: number,
+  y: number,
 }
 
 export interface MapData {
@@ -54,6 +58,14 @@ export class SnapshotCommand extends Command {
 
   constructor(id: string, data: SnapshotData) {
     super(CommandType.Snapshot, id, data);
+  }
+}
+
+export class AddPlayerCommand extends Command {
+  declare data: PlayerData;
+
+  constructor(id: string, data: PlayerData) {
+    super(CommandType.AddPlayer, id, data);
   }
 }
 
