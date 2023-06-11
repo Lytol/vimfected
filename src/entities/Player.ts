@@ -32,19 +32,14 @@ export default class Player {
     let stopMoving = false;
 
     const current = new Phaser.Math.Vector2(this.sprite.x, this.sprite.y);
-    console.log(`Current | x: ${current.x}  y: ${current.y}`)
     const target = tileToScreen(this.position);
-    console.log(`Target | x: ${target.x}  y: ${target.y}`)
     const diff = new Phaser.Math.Vector2(target.x, target.y).subtract(current);
-    console.log(`Diff | x: ${diff.x}  y: ${diff.y}`)
     const movement = new Phaser.Math.Vector2(diff.x, diff.y).normalize().scale(Player.SPEED * (delta / 1000));
-    console.log(`Movement | x: ${movement.x}  y: ${movement.y}`)
 
     if (movement.length() >= diff.length()) {
       this.sprite.setPosition(target.x, target.y);
       stopMoving = true;
     } else {
-      console.log(`Moving | x: ${movement.x}  y: ${movement.y}`)
       this.sprite.x += movement.x;
       this.sprite.y +=  movement.y;
     }

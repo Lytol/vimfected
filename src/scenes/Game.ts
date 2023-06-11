@@ -8,10 +8,11 @@ import PlayerJSON from '../assets/player.json';
 import { Command, CommandType, PlayerData, SnapshotData } from '../utils/Commands';
 
 export default class Game extends Phaser.Scene {
-  public player: Player;
-  public controls: Controls;
-  public client: Client;
-  public snapshot: SnapshotData;
+  private player: Player;
+  private controls: Controls;
+  private client: Client;
+  private snapshot: SnapshotData;
+  private debug: Phaser.GameObjects.Text;
 
   constructor() {
     super('game');
@@ -54,13 +55,15 @@ export default class Game extends Phaser.Scene {
     camera.roundPixels = true;
     camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // Debug text
+    this.debug = this.add.text(5, 5, "", { fontSize: '12px', color: '#fff' });
+    this.debug.setScrollFactor(0);
   }
 
   update(_: number, delta: number) {
     // TODO: process events from client
     for (const cmd of this.client.commands()) {
-      console.log("Processing command")
-      console.dir(cmd)
       this.#handleCommand(cmd)
     }
 
@@ -69,6 +72,9 @@ export default class Game extends Phaser.Scene {
 
     // TODO: Update game objects accordingly
     this.player.update(delta);
+
+    // DEBUG
+    this.debug.setText(`${this.client.id} x:${this.player.position.x} y:${this.player.position.y}`);
   }
 
   #handleCommand(cmd: Command) {
