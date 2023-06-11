@@ -4,15 +4,13 @@ export default class Client {
   static readonly PROTOCOL = "vimfected";
 
   public id: string;
-  public registered: boolean;
-  public commands: Array<Command>;
 
+  private _commands: Array<Command>;
   private ws: WebSocket;
 
   constructor(server: string, id: string) {
     this.id = id;
-    this.registered = false;
-    this.commands = [];
+    this._commands = [];
 
     this.ws = new WebSocket(server, Client.PROTOCOL);
     this.ws.addEventListener("error", this.onError.bind(this));
@@ -30,9 +28,7 @@ export default class Client {
 
   handle(event: MessageEvent) {
     const cmd = Command.parse(event.data);
-    console.log("Received command")
-    console.dir(cmd)
-    this.commands.push(cmd);
+    this._commands.push(cmd);
   }
 
   send(command: Command) {
@@ -43,17 +39,28 @@ export default class Client {
     let idx
 
     if (ct == CommandType.Any) {
-      idx = this.commands.length == 0 ? -1 : 0;
+      idx = this._commands.length == 0 ? -1 : 0;
     } else {
-      idx = this.commands.findIndex(cmd => cmd.type == ct);
+      idx = this._commands.findIndex(cmd => cmd.type == ct);
     }
 
     if (idx === -1) {
       return null;
     }
 
-    const cmd = this.commands[idx];
-    this.commands.splice(idx, 1);
+    const cmd = this._commands[idx];
+    this._commands.splice(idx, 1);
     return cmd;
+  }
+
+  *commands() {
+    while(true) {
+      const cmd = this.get();
+      if (cmd !== null) {
+        yield cmd;
+      } else {
+        return
+      }
+    }
   }
 }

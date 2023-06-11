@@ -1,9 +1,12 @@
+import { Direction } from "./constants";
+
 export enum CommandType {
   Any = "*",
   Register = "register",
   Snapshot = "snapshot",
   AddPlayer = "add_player",
-  Move = "move",
+  MovePlayer = "move_player",
+  MovePlayerInput = "move_player_input",
 };
 
 export class Command {
@@ -69,12 +72,20 @@ export class AddPlayerCommand extends Command {
   }
 }
 
-export interface MoveData {
+export class MovePlayerCommand extends Command {
+  declare data: PlayerData;
 
+  constructor(id: string, data: PlayerData) {
+    super(CommandType.MovePlayer, id, data);
+  }
 }
 
-export class MoveCommand extends Command {
-  constructor(id: string, data: MoveData) {
-    super(CommandType.Snapshot, id, data);
+export interface MovePlayerInputData {
+  direction: Direction;
+}
+
+export class MovePlayerInputCommand extends Command {
+  constructor(id: string, data: MovePlayerInputData) {
+    super(CommandType.MovePlayerInput, id, data);
   }
 }

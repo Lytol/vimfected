@@ -1,87 +1,93 @@
 import { Direction, TILE_SIZE } from '../utils/constants';
 
-export default class Player {
-  static readonly SPEED = TILE_SIZE*4;
+const tileToScreen = (pos: Phaser.Math.Vector2) => new Phaser.Math.Vector2(
+  pos.x * TILE_SIZE + (TILE_SIZE / 2),
+  pos.y * TILE_SIZE + TILE_SIZE,
+);
 
-  private movement: Direction = Direction.None;
-  private pixelsMoved: number = 0;
+export default class Player {
+  static readonly SPEED = TILE_SIZE * 4;
+
+  private moving: Direction = Direction.None;
 
   constructor(
     public sprite: Phaser.GameObjects.Sprite,
     public position: Phaser.Math.Vector2,
   ) {
-    const offsetX = TILE_SIZE / 2;
-    const offsetY = TILE_SIZE;
-
     this.sprite.setOrigin(0.5, 1);
+
+    const coords = tileToScreen(position);
+
     this.sprite.setPosition(
-      this.position.x * TILE_SIZE + offsetX,
-      this.position.y * TILE_SIZE + offsetY
+      coords.x,
+      coords.y,
     );
 
     this.sprite.setFrame("static/down");
   }
 
   update(delta: number): void {
-    if (this.movement === Direction.None) return;
+    if (this.moving === Direction.None) return;
 
     let stopMoving = false;
-    let positionChange = delta / 1000 * Player.SPEED;
 
-    if (this.pixelsMoved + positionChange >= TILE_SIZE) {
-      positionChange = TILE_SIZE - this.pixelsMoved;
+    const current = new Phaser.Math.Vector2(this.sprite.x, this.sprite.y);
+    console.log(`Current | x: ${current.x}  y: ${current.y}`)
+    const target = tileToScreen(this.position);
+    console.log(`Target | x: ${target.x}  y: ${target.y}`)
+    const diff = new Phaser.Math.Vector2(target.x, target.y).subtract(current);
+    console.log(`Diff | x: ${diff.x}  y: ${diff.y}`)
+    const movement = new Phaser.Math.Vector2(diff.x, diff.y).normalize().scale(Player.SPEED * (delta / 1000));
+    console.log(`Movement | x: ${movement.x}  y: ${movement.y}`)
+
+    if (movement.length() >= diff.length()) {
+      this.sprite.setPosition(target.x, target.y);
       stopMoving = true;
-    }
-
-    switch (this.movement) {
-      case Direction.Left:
-        this.sprite.x -= positionChange;
-        break;
-      case Direction.Right:
-        this.sprite.x += positionChange;
-        break;
-      case Direction.Up:
-        this.sprite.y -= positionChange;
-        break;
-      case Direction.Down:
-        this.sprite.y += positionChange;
-        break;
+    } else {
+      console.log(`Moving | x: ${movement.x}  y: ${movement.y}`)
+      this.sprite.x += movement.x;
+      this.sprite.y +=  movement.y;
     }
 
     if (stopMoving) {
       this.sprite.anims.stop();
-      this.sprite.setFrame(`static/${this.movement}`)
-      this.movement = Direction.None;
-    } else {
-      this.pixelsMoved += positionChange;
+      this.sprite.setFrame(`static/${this.moving}`)
+      this.moving = Direction.None;
     }
   }
 
-  move(direction: Direction): void {
-    if (this.movement !== Direction.None) {
+  moveTo(x: number, y: number) {
+    const currentX = this.position.x;
+    const currentY = this.position.y;
+
+    if (x === currentX && y === currentY) {
       return;
     }
 
-    this.movement = direction;
-    this.pixelsMoved = 0;
-
-    switch (this.movement) {
-      case Direction.Left:
-        this.position.x -= 1;
+    switch(true) {
+      case x < currentX:
+        this.moving = Direction.Left;
         this.sprite.anims.play("player-walk-left", true);
         break;
-      case Direction.Right:
-        this.position.x += 1;
+      case x > currentX:
+        this.moving = Direction.Right;
         this.sprite.anims.play("player-walk-right", true);
         break;
-      case Direction.Up:
-        this.position.y -= 1;
+      case y < currentY:
+        this.moving = Direction.Up;
         this.sprite.anims.play("player-walk-up", true);
         break;
-      case Direction.Down:
-        this.position.y += 1;
+      case y > currentY:
+        this.moving = Direction.Down;
         this.sprite.anims.play("player-walk-down", true);
         break;
     }
+
+    this.position.x = x;
+    this.position.y = y;
+  }
+
+  isMoving(): boolean {
+    return this.moving !== Direction.None;
   }
 }

@@ -5,7 +5,7 @@ import Client from '../utils/Client';
 import WorldTiles from '../assets/world-tiles.png';
 import PlayerPNG from '../assets/player.png';
 import PlayerJSON from '../assets/player.json';
-import { SnapshotData } from '../utils/Commands';
+import { Command, CommandType, PlayerData, SnapshotData } from '../utils/Commands';
 
 export default class Game extends Phaser.Scene {
   public player: Player;
@@ -47,7 +47,7 @@ export default class Game extends Phaser.Scene {
     }
 
     // Setup controls
-    this.controls = new Controls(this.input, this.client);
+    this.controls = new Controls(this.input, this.client, this.player);
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
     const camera = this.cameras.main;
@@ -57,13 +57,30 @@ export default class Game extends Phaser.Scene {
   }
 
   update(_: number, delta: number) {
+    // TODO: process events from client
+    for (const cmd of this.client.commands()) {
+      console.log("Processing command")
+      console.dir(cmd)
+      this.#handleCommand(cmd)
+    }
+
     // TODO: send events from controls
     this.controls.update();
 
-    // TODO: process events from client
-
     // TODO: Update game objects accordingly
     this.player.update(delta);
+  }
+
+  #handleCommand(cmd: Command) {
+    switch(cmd.type) {
+      case CommandType.MovePlayer:
+        const data = <PlayerData>cmd.data;
+        // TODO: this only moves the current player
+        if (data.id === this.client.id) {
+          this.player.moveTo(data.x, data.y);
+        }
+        break;
+    }
   }
 
   // TODO: animations should live with the entity itself

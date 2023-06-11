@@ -1,6 +1,7 @@
 import { Direction } from "./constants";
 import Client from "./Client";
-import { Command, CommandType } from "./Commands";
+import { MovePlayerInputCommand } from "./Commands";
+import Player from "../entities/Player";
 
 const { KeyCodes } = Phaser.Input.Keyboard; 
 
@@ -24,6 +25,7 @@ export default class Controls {
   constructor(
     input: Phaser.Input.InputPlugin,
     private client: Client,
+    private player: Player,
   ) {
     this.keys = input.keyboard.addKeys(KEY_BINDINGS) as KeyBindings;
   }
@@ -31,14 +33,16 @@ export default class Controls {
   update() {
     const { MOVE_LEFT, MOVE_DOWN, MOVE_UP, MOVE_RIGHT } = this.keys;
 
-    if (MOVE_LEFT.isDown) {
-      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Left }));
-    } else if (MOVE_DOWN.isDown) {
-      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Down }));
-    } else if (MOVE_UP.isDown) {
-      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Up }));
-    } else if (MOVE_RIGHT.isDown) {
-      this.client.send(new Command(CommandType.Move, this.client.id, { direction: Direction.Right }));
+    if (!this.player.isMoving()) {
+      if (MOVE_LEFT.isDown) {
+        this.client.send(new MovePlayerInputCommand(this.client.id, { direction: Direction.Left }));
+      } else if (MOVE_DOWN.isDown) {
+        this.client.send(new MovePlayerInputCommand(this.client.id, { direction: Direction.Down }));
+      } else if (MOVE_UP.isDown) {
+        this.client.send(new MovePlayerInputCommand(this.client.id, { direction: Direction.Up }));
+      } else if (MOVE_RIGHT.isDown) {
+        this.client.send(new MovePlayerInputCommand(this.client.id, { direction: Direction.Right }));
+      }
     }
   }
 }
