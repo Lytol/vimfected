@@ -82,14 +82,31 @@ export default class Game extends Phaser.Scene {
 
   #handleCommand(cmd: Command) {
     switch(cmd.type) {
-      case CommandType.MovePlayer:
+      case CommandType.AddPlayer: {
+        const data = <PlayerData>cmd.data;
+        const player = new Player(
+          this.physics.add.sprite(0, 0, "player"),
+          new Phaser.Math.Vector2(data.x, data.y),
+        );
+        this.players.set(data.id, player);
+      } break;
+      case CommandType.RemovePlayer: {
+        const data = <PlayerData>cmd.data;
+        const player = this.players.get(data.id);
+
+        if (player) {
+          this.players.delete(data.id);
+          player.destroy();
+        }
+      } break;
+      case CommandType.MovePlayer: {
         const data = <PlayerData>cmd.data;
         const player = this.players.get(data.id)
 
         if (player) {
           player.moveTo(data.x, data.y);
         }
-        break;
+      } break;
     }
   }
 

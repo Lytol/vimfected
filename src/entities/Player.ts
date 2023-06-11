@@ -26,6 +26,10 @@ export default class Player {
     this.sprite.setFrame("static/down");
   }
 
+  destroy() {
+    this.sprite.destroy(true);
+  }
+
   update(delta: number): void {
     if (this.moving === Direction.None) return;
 

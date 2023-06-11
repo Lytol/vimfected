@@ -5,6 +5,7 @@ export enum CommandType {
   Register = "register",
   Snapshot = "snapshot",
   AddPlayer = "add_player",
+  RemovePlayer = "remove_player",
   MovePlayer = "move_player",
   MovePlayerInput = "move_player_input",
 };
@@ -69,6 +70,14 @@ export class AddPlayerCommand extends Command {
 
   constructor(id: string, data: PlayerData) {
     super(CommandType.AddPlayer, id, data);
+  }
+}
+
+export class RemovePlayerCommand extends Command {
+  declare data: PlayerData;
+
+  constructor(id: string, data: PlayerData) {
+    super(CommandType.RemovePlayer, id, data);
   }
 }
 
