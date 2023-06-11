@@ -8,14 +8,16 @@ import PlayerJSON from '../assets/player.json';
 import { Command, CommandType, PlayerData, SnapshotData } from '../utils/Commands';
 
 export default class Game extends Phaser.Scene {
-  private player: Player;
   private controls: Controls;
   private client: Client;
   private snapshot: SnapshotData;
+  private currentPlayer: Player;
+  private players: Map<string, Player>;
   private debug: Phaser.GameObjects.Text;
 
   constructor() {
     super('game');
+    this.players = new Map<string, Player>();
   }
 
   init({ client, snapshot }: { client: Client; snapshot: SnapshotData }) {
@@ -37,23 +39,26 @@ export default class Game extends Phaser.Scene {
     // Setup animations
     this.#setupAnimations();
 
-    // TODO: Handle other player
     for (const p of this.snapshot.players) {
+      const player = new Player(
+        this.physics.add.sprite(0, 0, "player"),
+        new Phaser.Math.Vector2(p.x, p.y),
+      );
+
+      this.players.set(p.id, player);
+
       if (p.id === this.client.id) {
-        this.player = new Player(
-          this.physics.add.sprite(0, 0, "player"),
-          new Phaser.Math.Vector2(p.x, p.y),
-        );
+        this.currentPlayer = player;
       }
     }
 
     // Setup controls
-    this.controls = new Controls(this.input, this.client, this.player);
+    this.controls = new Controls(this.input, this.client, this.currentPlayer);
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
     const camera = this.cameras.main;
     camera.roundPixels = true;
-    camera.startFollow(this.player.sprite);
+    camera.startFollow(this.currentPlayer.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     // Debug text
@@ -62,28 +67,27 @@ export default class Game extends Phaser.Scene {
   }
 
   update(_: number, delta: number) {
-    // TODO: process events from client
     for (const cmd of this.client.commands()) {
       this.#handleCommand(cmd)
     }
 
-    // TODO: send events from controls
     this.controls.update();
 
-    // TODO: Update game objects accordingly
-    this.player.update(delta);
+    for (const player of this.players.values()) {
+      player.update(delta);
+    }
 
-    // DEBUG
-    this.debug.setText(`${this.client.id} x:${this.player.position.x} y:${this.player.position.y}`);
+    this.debug.setText(`${this.client.id} x:${this.currentPlayer.position.x} y:${this.currentPlayer.position.y}`);
   }
 
   #handleCommand(cmd: Command) {
     switch(cmd.type) {
       case CommandType.MovePlayer:
         const data = <PlayerData>cmd.data;
-        // TODO: this only moves the current player
-        if (data.id === this.client.id) {
-          this.player.moveTo(data.x, data.y);
+        const player = this.players.get(data.id)
+
+        if (player) {
+          player.moveTo(data.x, data.y);
         }
         break;
     }
