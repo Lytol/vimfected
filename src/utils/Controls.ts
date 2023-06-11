@@ -11,14 +11,21 @@ const KEY_BINDINGS = {
   MOVE_RIGHT: KeyCodes.L,
 };
 
+interface KeyBindings {
+  MOVE_LEFT: Phaser.Input.Keyboard.Key;
+  MOVE_DOWN: Phaser.Input.Keyboard.Key;
+  MOVE_UP:   Phaser.Input.Keyboard.Key;
+  MOVE_RIGHT: Phaser.Input.Keyboard.Key;
+}
+
 export default class Controls {
-  keys: object;
+  keys: KeyBindings;
 
   constructor(
     input: Phaser.Input.InputPlugin,
     private client: Client,
   ) {
-    this.keys = input.keyboard.addKeys(KEY_BINDINGS);
+    this.keys = input.keyboard.addKeys(KEY_BINDINGS) as KeyBindings;
   }
 
   update() {
