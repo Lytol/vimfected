@@ -7,3 +7,8 @@ export enum Direction {
   Right = "right",
   Down = "down",
 };
+
+export enum Mode {
+  Normal = "normal",
+  Command = "command",
+};

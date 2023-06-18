@@ -7,13 +7,15 @@ import WorldTiles from '../assets/world-tiles.png';
 import PlayerPNG from '../assets/player.png';
 import PlayerJSON from '../assets/player.json';
 import { Command, CommandType, PlayerData, SnapshotData } from '../utils/Commands';
+import { Mode } from '../utils/constants';
 
 export default class Game extends Phaser.Scene {
-  private controls: Controls;
-  private client: Client;
+  public controls: Controls;
+  public client: Client;
+  public currentPlayer: Player;
+  public players: Map<string, Player>;
+
   private snapshot: SnapshotData;
-  private currentPlayer: Player;
-  private players: Map<string, Player>;
 
   constructor() {
     super('game');
@@ -23,6 +25,10 @@ export default class Game extends Phaser.Scene {
   init({ client, snapshot }: { client: Client; snapshot: SnapshotData }) {
     this.client = client;
     this.snapshot = snapshot;
+
+    // Start in normal mode
+    this.game.registry.set('mode', Mode.Normal);
+
   }
 
   preload() {
@@ -53,7 +59,7 @@ export default class Game extends Phaser.Scene {
     }
 
     // Setup controls
-    this.controls = new Controls(this.input, this.client, this.currentPlayer);
+    this.controls = new Controls(this);
 
     // Constrain the camera so that it isn't allowed to move outside the width/height of tilemap
     const camera = this.cameras.main;
@@ -75,7 +81,14 @@ export default class Game extends Phaser.Scene {
       this.#handleCommand(cmd)
     }
 
-    this.controls.update();
+    if (this.mode === Mode.Normal) {
+      // TODO: we should use events rather than update every time
+      this.input.enabled = true;
+      this.controls.update();
+    } else {
+      // TODO: we should use events rather than update every time
+      this.input.enabled = false;
+    }
 
     for (const player of this.players.values()) {
       player.update(delta);
@@ -141,5 +154,9 @@ export default class Game extends Phaser.Scene {
       frameRate: 10,
       repeat: -1
     });
+  }
+
+  private get mode(): Mode {
+    return this.game.registry.get('mode');
   }
 }
