@@ -1,4 +1,4 @@
-import { Direction, TILE_SIZE } from '../utils/constants';
+import { Direction, MS_PER_ACTION, TILE_SIZE } from '../utils/constants';
 
 const tileToScreen = (pos: Phaser.Math.Vector2) => new Phaser.Math.Vector2(
   pos.x * TILE_SIZE + (TILE_SIZE / 2),
@@ -6,8 +6,6 @@ const tileToScreen = (pos: Phaser.Math.Vector2) => new Phaser.Math.Vector2(
 );
 
 export default class Player {
-  static readonly SPEED = TILE_SIZE * 4;
-
   private moving: Direction = Direction.None;
 
   constructor(
@@ -38,7 +36,7 @@ export default class Player {
     const current = new Phaser.Math.Vector2(this.sprite.x, this.sprite.y);
     const target = tileToScreen(this.position);
     const diff = new Phaser.Math.Vector2(target.x, target.y).subtract(current);
-    const movement = new Phaser.Math.Vector2(diff.x, diff.y).normalize().scale(Player.SPEED * (delta / 1000));
+    const movement = new Phaser.Math.Vector2(diff.x, diff.y).normalize().scale(TILE_SIZE * (delta / MS_PER_ACTION));
 
     if (movement.length() >= diff.length()) {
       this.sprite.setPosition(target.x, target.y);
@@ -86,7 +84,7 @@ export default class Player {
     this.position.y = y;
   }
 
-  isMoving(): boolean {
-    return this.moving !== Direction.None;
+  get isReady(): boolean {
+    return this.moving === Direction.None;
   }
 }

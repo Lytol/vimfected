@@ -81,15 +81,6 @@ export default class Game extends Phaser.Scene {
       this.#handleCommand(cmd)
     }
 
-    if (this.mode === Mode.Normal) {
-      // TODO: we should use events rather than update every time
-      this.input.enabled = true;
-      this.controls.update();
-    } else {
-      // TODO: we should use events rather than update every time
-      this.input.enabled = false;
-    }
-
     for (const player of this.players.values()) {
       player.update(delta);
     }

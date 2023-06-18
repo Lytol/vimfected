@@ -8,6 +8,7 @@ export enum CommandType {
   RemovePlayer = "remove_player",
   MovePlayer = "move_player",
   MovePlayerInput = "move_player_input",
+  ClearPlayerInput = "clear_player_input",
 };
 
 export class Command {
@@ -96,5 +97,11 @@ export interface MovePlayerInputData {
 export class MovePlayerInputCommand extends Command {
   constructor(id: string, data: MovePlayerInputData) {
     super(CommandType.MovePlayerInput, id, data);
+  }
+}
+
+export class ClearPlayerInputCommand extends Command {
+  constructor(id: string) {
+    super(CommandType.ClearPlayerInput, id, {});
   }
 }
