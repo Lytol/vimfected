@@ -4,16 +4,17 @@ import Game from './scenes/Game';
 
 import './styles.css';
 
+const ZoomFactor = 2;
+
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     parent: "app",
-    width: 1280,
-    height: 720,
+    mode: Phaser.Scale.NONE,
+    width: window.innerWidth / ZoomFactor,
+    height: window.innerHeight / ZoomFactor,
+    zoom: ZoomFactor,
     render: {
       antialias: false,
-    },
-    scale: {
-      mode: Phaser.Scale.ENVELOP,
     },
     pixelArt: true,
     physics: {
@@ -28,4 +29,13 @@ const config: Phaser.Types.Core.GameConfig = {
     ]
 };
 
-export default new Phaser.Game(config);
+const game = new Phaser.Game(config)
+
+window.addEventListener("resize", () => {
+  game.scale.resize(
+    window.innerWidth / ZoomFactor,
+    window.innerHeight / ZoomFactor
+    );
+});
+
+export default game;

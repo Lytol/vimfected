@@ -1,3 +1,4 @@
+import Status from './Status';
 import Controls from '../utils/Controls';
 import Player from '../entities/Player';
 import Client from '../utils/Client';
@@ -13,7 +14,6 @@ export default class Game extends Phaser.Scene {
   private snapshot: SnapshotData;
   private currentPlayer: Player;
   private players: Map<string, Player>;
-  private debug: Phaser.GameObjects.Text;
 
   constructor() {
     super('game');
@@ -60,10 +60,14 @@ export default class Game extends Phaser.Scene {
     camera.roundPixels = true;
     camera.startFollow(this.currentPlayer.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    camera.setViewport(0, 0, this.game.scale.width, this.game.scale.height - Status.DefaultHeight);
 
-    // Debug text
-    this.debug = this.add.text(5, 5, "", { fontSize: '12px', color: '#fff' });
-    this.debug.setScrollFactor(0);
+    this.scale.addListener(Phaser.Scale.Events.RESIZE, (gameSize: Phaser.Structs.Size) => {
+      camera.setViewport(0, 0, gameSize.width, gameSize.height - Status.DefaultHeight);
+    });
+
+    // Add additional scenes
+    this.scene.add("status", Status, true, { currentPlayer: this.currentPlayer });
   }
 
   update(_: number, delta: number) {
@@ -76,8 +80,6 @@ export default class Game extends Phaser.Scene {
     for (const player of this.players.values()) {
       player.update(delta);
     }
-
-    this.debug.setText(`${this.client.id} x:${this.currentPlayer.position.x} y:${this.currentPlayer.position.y}`);
   }
 
   #handleCommand(cmd: Command) {
